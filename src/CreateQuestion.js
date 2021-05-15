@@ -127,15 +127,23 @@ export default class CreateQuestion extends Component {
       Object.keys(this.state)
         .filter((key) => key.includes("option"))
         .forEach((key) => {
+          console.log(key);
           this.setState({
             [key]: { is_correct: false, text: "" },
           });
         });
-      this.setState({ ...this.state, question: "", mark: 0 });
+      this.setState({
+        ...this.state,
+        question: "",
+        mark: 0,
+        flag: 2,
+        counter: this.state.counter + 1,
+      });
     };
 
     const handleSubmit = () => {
-      let done = 0;
+      var done = 1;
+
       axios
         .post(
           `https://cors-anywhere.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/${this.state.exam_id}/question/`,
@@ -169,9 +177,12 @@ export default class CreateQuestion extends Component {
                       headers: { Authorization: "Token " + this.state.token },
                     }
                   )
-                  .then(() => {
-                    resetchoices(``);
-                    done = 1;
+                  .catch(() => {
+                    this.setState({
+                      ...this.state,
+                      flag: 1,
+                    });
+                    done = 0;
                   });
             });
         })
@@ -183,11 +194,7 @@ export default class CreateQuestion extends Component {
           });
         });
       if (done === 1) {
-        this.setState({
-          ...this.state,
-          flag: 2,
-          counter: this.state.counter + 1,
-        });
+        resetchoices();
       }
     };
     return (
@@ -219,7 +226,7 @@ export default class CreateQuestion extends Component {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                label={(this.state.counter, "Question")}
+                label={"Question " + this.state.counter}
                 onChange={handleQuestionChange}
               />{" "}
               <TextField
