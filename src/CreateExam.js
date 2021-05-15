@@ -10,6 +10,7 @@ import {
 import DateFnsUtils from "@date-io/date-fns";
 import axios from "axios";
 import CreateQuestion from "./CreateQuestion";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 export default class CreateExam extends Component {
   state = {
@@ -20,6 +21,8 @@ export default class CreateExam extends Component {
     exam_name: "",
     token: "",
     exam_id: null,
+    loading: false,
+    disable: false,
   };
   render() {
     const handleDateChange = (date) => {
@@ -40,6 +43,10 @@ export default class CreateExam extends Component {
       });
     };
     const handleSubmit = () => {
+      this.setState({
+        ...this.state,
+        loading: true,
+      });
       axios
         .post(
           `https://cors-anywhere.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/dj-rest-auth/login/`,
@@ -68,8 +75,16 @@ export default class CreateExam extends Component {
               this.setState({
                 ...this.state,
                 exam_id: id,
+                loading: false,
+                disable: true,
               });
-            });
+            })
+            .catch(
+              this.setState({
+                ...this.state,
+                loading: false,
+              })
+            );
         });
     };
     const handleDurationChange = (e) => {
@@ -132,10 +147,17 @@ export default class CreateExam extends Component {
           variant="contained"
           color="primary"
           size="small"
-          startIcon={<SaveIcon />}
+          startIcon={
+            this.state.loading ? (
+              <CircularProgress size={20} color="secondary" />
+            ) : (
+              <SaveIcon />
+            )
+          }
+          disabled={this.state.loading || this.state.disable}
           onClick={handleSubmit}
         >
-          Create Exam
+          {this.state.loading ? "Creating exam..." : "Create Exam"}
         </Button>
         {this.state.exam_id && (
           <CreateQuestion
