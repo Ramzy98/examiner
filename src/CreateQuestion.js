@@ -128,10 +128,15 @@ export default class CreateQuestion extends Component {
         .filter((key) => key.includes("option"))
         .forEach((key) => {
           console.log(key);
-          this.setState({
-            [key]: { is_correct: false, text: "" },
-          });
+          this.setState(
+            {
+              [key]: { is_correct: false, text: "" },
+            },
+            resetQuestion
+          );
         });
+    };
+    const resetQuestion = () => {
       this.setState({
         ...this.state,
         question: "",
@@ -140,7 +145,6 @@ export default class CreateQuestion extends Component {
         counter: this.state.counter + 1,
       });
     };
-
     const handleSubmit = () => {
       var done = 1;
 
