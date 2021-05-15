@@ -5,13 +5,13 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent"; /*
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";*/
+import CardContent from "@material-ui/core/CardContent";
 import AddIcon from "@material-ui/icons/Add";
 import axios from "axios";
 import CardActions from "@material-ui/core/CardActions";
 import { Alert } from "@material-ui/lab";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import SaveIcon from "@material-ui/icons/Save";
 
 export default class CreateQuestion extends Component {
   state = {
@@ -38,6 +38,7 @@ export default class CreateQuestion extends Component {
     mark: 0,
     flag: 0,
     counter: 1,
+    loading: false,
   };
   constructor(props) {
     super(props);
@@ -146,6 +147,10 @@ export default class CreateQuestion extends Component {
       });
     };
     const handleSubmit = () => {
+      this.setState({
+        ...this.state,
+        loading: true,
+      });
       var done = 1;
 
       axios
@@ -200,6 +205,10 @@ export default class CreateQuestion extends Component {
       if (done === 1) {
         resetchoices();
       }
+      this.setState({
+        ...this.state,
+        loading: true,
+      });
     };
     return (
       <div style={{ padding: "1% 10%" }}>
@@ -296,10 +305,19 @@ export default class CreateQuestion extends Component {
                 variant="contained"
                 color="primary"
                 size="small"
-                startIcon={<AddIcon />}
+                startIcon={
+                  this.state.loading ? (
+                    <CircularProgress size={20} color="secondary" />
+                  ) : (
+                    <SaveIcon />
+                  )
+                }
+                disabled={this.state.loading}
                 onClick={handleSubmit}
               >
-                Create Question
+                {this.state.loading
+                  ? "Adding question..."
+                  : "Add a new question"}
               </Button>
             </div>
           </CardContent>
