@@ -14,6 +14,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import AddIcon from "@material-ui/icons/Add";
 import AddStudents from "./AddStudent";
 import AddSupervisors from "./AddSupervisors";
+import DoneIcon from "@material-ui/icons/Done";
 
 export default class CreateExam extends Component {
   state = {
@@ -28,7 +29,15 @@ export default class CreateExam extends Component {
     created: false,
     AddStudents: false,
     AddSupervisors: false,
+    token: "",
   };
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...this.state,
+      token: props.token,
+    };
+  }
   render() {
     const handleDateChange = (date) => {
       this.setState({
@@ -113,8 +122,9 @@ export default class CreateExam extends Component {
     };
 
     return (
-      <div>
+      <div style={{ textAlign: "center" }}>
         <TextField
+          size="small"
           required
           id="ExamName"
           label="Exam name"
@@ -165,6 +175,8 @@ export default class CreateExam extends Component {
           startIcon={
             this.state.loading ? (
               <CircularProgress size={20} color="secondary" />
+            ) : this.state.created ? (
+              <DoneIcon />
             ) : (
               <SaveIcon />
             )
@@ -179,14 +191,12 @@ export default class CreateExam extends Component {
           }
           onClick={handleSubmit}
         >
-          {this.state.loading ? "Creating exam..." : "Create Exam"}
-        </Button>
-        {this.state.exam_id && (
-          <CreateQuestion
-            exam_id={this.state.exam_id}
-            token={this.state.token}
-          />
-        )}{" "}
+          {this.state.loading
+            ? "Creating exam..."
+            : this.state.created
+            ? "Exam created successfully"
+            : "Create Exam"}
+        </Button>{" "}
         <Button
           variant="contained"
           color="primary"
@@ -207,6 +217,12 @@ export default class CreateExam extends Component {
         >
           Add supervisors
         </Button>
+        {this.state.exam_id && (
+          <CreateQuestion
+            exam_id={this.state.exam_id}
+            token={this.state.token}
+          />
+        )}{" "}
         {this.state.AddStudents && (
           <AddStudents exam_id={this.state.exam_id} token={this.state.token} />
         )}

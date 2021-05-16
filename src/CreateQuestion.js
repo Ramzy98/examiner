@@ -131,7 +131,7 @@ export default class CreateQuestion extends Component {
             {
               [key]: { is_correct: false, text: "" },
             },
-            resetQuestion()
+            resetQuestion
           );
         });
     };
