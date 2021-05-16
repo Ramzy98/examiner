@@ -19,7 +19,6 @@ export default class CreateExam extends Component {
     date_time: "",
     exam_duration: "",
     exam_name: "",
-    token: "",
     exam_id: null,
     loading: false,
     disable: false,
@@ -49,43 +48,32 @@ export default class CreateExam extends Component {
       });
       axios
         .post(
-          `https://cors-anywhere.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/dj-rest-auth/login/`,
+          `https://cors-anywhere.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/`,
           {
-            username: "ramzyexaminer",
-            password: "aa00000000",
+            exam_name: this.state.exam_name,
+            exam_startdate: this.state.date_time,
+            exam_duration: this.state.exam_duration,
+          },
+          {
+            headers: { Authorization: "Token " + this.props.token },
           }
         )
-        .then((res) => {
-          console.log(res);
-          axios
-            .post(
-              `https://cors-anywhere.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/`,
-              {
-                exam_name: this.state.exam_name,
-                exam_startdate: this.state.date_time,
-                exam_duration: this.state.exam_duration,
-              },
-              {
-                headers: { Authorization: "Token " + res.data.key },
-              }
-            )
-            .then((res1) => {
-              console.log("sdsdsdsdsdssssssssss", res1.data.id);
-              let id = res1.data.id;
-              this.setState({
-                ...this.state,
-                exam_id: id,
-                loading: false,
-                disable: true,
-              });
-            })
-            .catch(
-              this.setState({
-                ...this.state,
-                loading: false,
-              })
-            );
-        });
+        .then((res1) => {
+          console.log("sdsdsdsdsdssssssssss", res1.data.id);
+          let id = res1.data.id;
+          this.setState({
+            ...this.state,
+            exam_id: id,
+            loading: false,
+            disable: true,
+          });
+        })
+        .catch(
+          this.setState({
+            ...this.state,
+            loading: false,
+          })
+        );
     };
     const handleDurationChange = (e) => {
       this.setState({
@@ -162,7 +150,7 @@ export default class CreateExam extends Component {
         {this.state.exam_id && (
           <CreateQuestion
             exam_id={this.state.exam_id}
-            token={"b9bb864dbd489d8b714a2211cc32aa78697a6adb"}
+            token={this.props.token}
           />
         )}
       </div>
