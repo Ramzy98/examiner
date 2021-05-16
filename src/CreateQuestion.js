@@ -127,12 +127,11 @@ export default class CreateQuestion extends Component {
       Object.keys(this.state)
         .filter((key) => key.includes("option"))
         .forEach((key) => {
-          console.log(key);
           this.setState(
             {
               [key]: { is_correct: false, text: "" },
             },
-            resetQuestion
+            resetQuestion()
           );
         });
     };
@@ -164,7 +163,6 @@ export default class CreateQuestion extends Component {
           }
         )
         .then((res) => {
-          console.log(res, "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSs");
           this.setState({
             ...this.state,
             question_id: res.data.id,
@@ -172,7 +170,6 @@ export default class CreateQuestion extends Component {
           Object.keys(this.state)
             .filter((key) => key.includes("option"))
             .forEach((key) => {
-              console.log(this.state[key]);
               if (this.state[key].text !== "")
                 axios
                   .post(
@@ -195,7 +192,6 @@ export default class CreateQuestion extends Component {
             });
         })
         .catch((res) => {
-          console.log("SDSDSDSDSDSDSD");
           this.setState({
             ...this.state,
             flag: 1,
@@ -206,18 +202,17 @@ export default class CreateQuestion extends Component {
       }
       this.setState({
         ...this.state,
-        loading: true,
+        loading: false,
       });
     };
     return (
       <div style={{ padding: "1% 10%" }}>
         <Card variant="outlined">
           <CardContent>
-            {console.log("Qustion State ", this.state)}{" "}
             {this.state.flag === 1 ? (
               <Alert severity="error">
                 {" "}
-                All fields must be filled (except the options field 1 at least
+                All fields must be filled (except the options 1 option at least
                 required)!
               </Alert>
             ) : this.state.flag === 2 ? (

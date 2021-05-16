@@ -11,17 +11,23 @@ import DateFnsUtils from "@date-io/date-fns";
 import axios from "axios";
 import CreateQuestion from "./CreateQuestion";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import AddIcon from "@material-ui/icons/Add";
+import AddStudents from "./AddStudent";
+import AddSupervisors from "./AddSupervisors";
 
 export default class CreateExam extends Component {
   state = {
     date: new Date().toISOString().slice(0, 10),
     time: new Date(),
     date_time: "",
-    exam_duration: "",
-    exam_name: "",
+    exam_duration: 0,
+    exam_name: "exam_name",
     exam_id: null,
     loading: false,
     disable: false,
+    created: false,
+    AddStudents: false,
+    AddSupervisors: false,
   };
   render() {
     const handleDateChange = (date) => {
@@ -41,6 +47,18 @@ export default class CreateExam extends Component {
         ),
       });
     };
+    const handleAddStudent = () => {
+      this.setState({
+        ...this.state,
+        AddStudents: true,
+      });
+    };
+    const handleAddSupervisors = () => {
+      this.setState({
+        ...this.state,
+        AddSupervisors: true,
+      });
+    };
     const handleSubmit = () => {
       this.setState({
         ...this.state,
@@ -55,17 +73,19 @@ export default class CreateExam extends Component {
             exam_duration: this.state.exam_duration,
           },
           {
-            headers: { Authorization: "Token " + this.props.token },
+            headers: {
+              Authorization: "Token " + this.state.token,
+            },
           }
         )
         .then((res1) => {
-          console.log("sdsdsdsdsdssssssssss", res1.data.id);
           let id = res1.data.id;
           this.setState({
             ...this.state,
             exam_id: id,
             loading: false,
             disable: true,
+            created: true,
           });
         })
         .catch(
@@ -79,6 +99,10 @@ export default class CreateExam extends Component {
       this.setState({
         ...this.state,
         exam_duration: e.target.value,
+        date_time: this.state.date
+          .concat("T")
+          .substr(0, 11)
+          .concat(this.state.time.toISOString().split("T")[1]),
       });
     };
     const handleExamNameChange = (e) => {
@@ -95,6 +119,7 @@ export default class CreateExam extends Component {
           id="ExamName"
           label="Exam name"
           onChange={handleExamNameChange}
+          error={this.state.exam_name ? false : true}
         />
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <br />{" "}
@@ -118,6 +143,7 @@ export default class CreateExam extends Component {
             label="Pick the time"
             value={this.state.time}
             onChange={handleTimeChange}
+            required
             KeyboardButtonProps={{
               "aria-label": "change time",
             }}
@@ -129,6 +155,7 @@ export default class CreateExam extends Component {
           id="standard-required"
           label="Duration in hours"
           onChange={handleDurationChange}
+          error={isNaN(this.state.exam_duration)}
         />
         <br /> <br />
         <Button
@@ -142,7 +169,14 @@ export default class CreateExam extends Component {
               <SaveIcon />
             )
           }
-          disabled={this.state.loading || this.state.disable}
+          disabled={
+            this.state.loading ||
+            this.state.disable ||
+            isNaN(this.state.exam_duration) ||
+            this.state.exam_duration === 0 ||
+            this.state.exam_name === "exam_name" ||
+            this.state.exam_name === "exam_name"
+          }
           onClick={handleSubmit}
         >
           {this.state.loading ? "Creating exam..." : "Create Exam"}
@@ -150,7 +184,36 @@ export default class CreateExam extends Component {
         {this.state.exam_id && (
           <CreateQuestion
             exam_id={this.state.exam_id}
-            token={this.props.token}
+            token={this.state.token}
+          />
+        )}{" "}
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          disabled={!this.state.created}
+          startIcon={<AddIcon />}
+          onClick={handleAddStudent}
+        >
+          Add allowed students
+        </Button>{" "}
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          disabled={!this.state.created}
+          startIcon={<AddIcon />}
+          onClick={handleAddSupervisors}
+        >
+          Add supervisors
+        </Button>
+        {this.state.AddStudents && (
+          <AddStudents exam_id={this.state.exam_id} token={this.state.token} />
+        )}
+        {this.state.AddSupervisors && (
+          <AddSupervisors
+            exam_id={this.state.exam_id}
+            token={this.state.token}
           />
         )}
       </div>
