@@ -5,7 +5,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import AddIcon from "@material-ui/icons/Add";
 import axios from "axios";
 import { Alert } from "@material-ui/lab";
-
+var success = false;
 export default class AddSupervisors extends Component {
   state = {
     supervisors: [],
@@ -31,15 +31,16 @@ export default class AddSupervisors extends Component {
     };
     const handleSubmit = () => {
       axios
-        .post(
+        .patch(
           `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/${this.state.exam_id}/supervisors/`,
           {
-            students: this.state.supervisors,
+            supervisor: this.state.supervisors,
           },
           {
             headers: { Authorization: "Token " + this.state.token },
           }
         )
+        .then(this.forceUpdate(), (success = true))
         .catch(() => {
           this.setState({
             ...this.state,
@@ -49,7 +50,9 @@ export default class AddSupervisors extends Component {
     };
     return (
       <div>
-        {this.state.error !== "" ? (
+        {success === true ? (
+          <Alert severity="success">Supervisors added successfully! </Alert>
+        ) : this.state.error !== "" ? (
           <Alert severity="error"> {this.state.error}</Alert>
         ) : (
           <div></div>
@@ -57,7 +60,7 @@ export default class AddSupervisors extends Component {
         <br />
         <TextField
           id="outlined-multiline-static"
-          label="Add allowed Students"
+          label="Add allowed Supervisors"
           multiline
           rowsMax={this.state.supervisors.length}
           variant="outlined"

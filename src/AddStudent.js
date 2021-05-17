@@ -5,6 +5,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import AddIcon from "@material-ui/icons/Add";
 import axios from "axios";
 import { Alert } from "@material-ui/lab";
+var success = false;
 
 export default class AddStudents extends Component {
   state = {
@@ -40,6 +41,8 @@ export default class AddStudents extends Component {
             headers: { Authorization: "Token " + this.state.token },
           }
         )
+        .then(this.forceUpdate(), (success = true))
+
         .catch(() => {
           this.setState({
             ...this.state,
@@ -49,7 +52,9 @@ export default class AddStudents extends Component {
     };
     return (
       <div>
-        {this.state.error !== "" ? (
+        {success === true ? (
+          <Alert severity="success">Students added successfully! </Alert>
+        ) : this.state.error !== "" ? (
           <Alert severity="error"> {this.state.error}</Alert>
         ) : (
           <div></div>

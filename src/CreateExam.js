@@ -15,6 +15,7 @@ import AddIcon from "@material-ui/icons/Add";
 import AddStudents from "./AddStudent";
 import AddSupervisors from "./AddSupervisors";
 import DoneIcon from "@material-ui/icons/Done";
+var loading = false;
 
 export default class CreateExam extends Component {
   componentDidMount() {
@@ -32,11 +33,11 @@ export default class CreateExam extends Component {
     exam_duration: 0,
     exam_name: "exam_name",
     exam_id: null,
-    loading: false,
     disable: false,
     created: false,
     AddStudents: false,
     AddSupervisors: false,
+    loading: false,
     token: "",
   };
   constructor(props) {
@@ -98,10 +99,8 @@ export default class CreateExam extends Component {
       });
     };
     const handleSubmit = () => {
-      handlePromise();
-      this.setState({
-        loading: false,
-      });
+      loading = true;
+      this.setState({ loading: true }, handlePromise);
     };
     const handleDurationChange = (e) => {
       this.setState({
@@ -109,7 +108,6 @@ export default class CreateExam extends Component {
       });
     };
     const handlePromise = () => {
-      console.log(this.state);
       axios
         .post(
           `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/`,
@@ -132,6 +130,7 @@ export default class CreateExam extends Component {
             created: true,
           });
         });
+      loading = false;
     };
     const handleExamNameChange = (e) => {
       this.setState({
@@ -141,7 +140,7 @@ export default class CreateExam extends Component {
 
     return (
       <div style={{ textAlign: "center" }}>
-        {console.log(this.state)}
+        {console.log(loading, "lodadssdadsa")}
         <TextField
           size="small"
           required
@@ -192,7 +191,7 @@ export default class CreateExam extends Component {
           color="primary"
           size="small"
           startIcon={
-            this.state.loading ? (
+            loading ? (
               <CircularProgress size={20} color="secondary" />
             ) : this.state.created ? (
               <DoneIcon />
@@ -201,7 +200,7 @@ export default class CreateExam extends Component {
             )
           }
           disabled={
-            this.state.loading ||
+            loading ||
             this.state.disable ||
             isNaN(this.state.exam_duration) ||
             this.state.exam_duration === 0 ||
@@ -209,16 +208,9 @@ export default class CreateExam extends Component {
             this.state.exam_name === "exam_name" ||
             this.state.exam_duration === ""
           }
-          onClick={() => {
-            this.setState(
-              {
-                loading: true,
-              },
-              handleSubmit
-            );
-          }}
+          onClick={handleSubmit}
         >
-          {this.state.loading
+          {loading
             ? "Creating exam..."
             : this.state.created
             ? "Exam created successfully"

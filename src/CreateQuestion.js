@@ -35,7 +35,6 @@ export default class CreateQuestion extends Component {
     token: "",
     question_id: "question_id",
     mark: 0,
-    flag: 0,
     counter: 1,
     loading: false,
   };
@@ -136,7 +135,6 @@ export default class CreateQuestion extends Component {
       this.setState({
         loading: true,
       });
-      let done = 1;
 
       axios
         .post(
@@ -168,11 +166,11 @@ export default class CreateQuestion extends Component {
                       headers: { Authorization: "Token " + this.state.token },
                     }
                   )
-                  .then((flag = 2), this.setState(resetchoices()))
+                  .then((flag = 2), resetchoices())
                   .catch((flag = 1));
             });
         })
-        .catch((done = 0), (flag = 1));
+        .catch((flag = 1));
       this.setState({
         loading: false,
       });
@@ -189,8 +187,10 @@ export default class CreateQuestion extends Component {
             ) : flag === 1 ? (
               <Alert severity="error">
                 {" "}
-                Error occured while creating the question, please make sure you
-                filled all the required fields (at least 1 option is required)
+                {this.state.loading
+                  ? "loading plz wait"
+                  : `Error occured while creating the question, please make sure you
+                filled all the required fields (at least 1 option is required)`}
               </Alert>
             ) : (
               <div></div>
