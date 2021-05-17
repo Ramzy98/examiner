@@ -67,7 +67,7 @@ export default class AddSupervisors extends Component {
           onChange={handleAddSupervisors}
           fullWidth
           size="medium"
-          value={this.state.supervisors}
+          /* value={this.state.supervisors}*/
         />
         <br /> <br />
         <Button

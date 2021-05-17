@@ -69,7 +69,7 @@ export default class AddStudents extends Component {
           onChange={handleAddStudents}
           fullWidth
           size="medium"
-          value={this.state.allowedStudents}
+          /*  value={this.state.allowedStudents}*/
         />
         <br /> <br />
         <Button
