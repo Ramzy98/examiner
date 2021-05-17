@@ -17,6 +17,14 @@ import AddSupervisors from "./AddSupervisors";
 import DoneIcon from "@material-ui/icons/Done";
 
 export default class CreateExam extends Component {
+  componentDidMount() {
+    this.setState({
+      date_time: this.state.date
+        .concat("T")
+        .substr(0, 11)
+        .concat(this.state.time.toISOString().split("T")[1]),
+    });
+  }
   state = {
     date: new Date().toISOString().slice(0, 10),
     time: new Date(),
@@ -40,42 +48,71 @@ export default class CreateExam extends Component {
   }
   render() {
     const handleDateChange = (date) => {
-      this.setState({
-        ...this.state,
-        date: date,
-        date_time: date.toISOString().substr(0, 11),
-      });
+      if (
+        this.state.date_time.includes("Z") &&
+        this.state.date_time.includes("T")
+      ) {
+        this.setState({
+          ...this.state,
+          date: date,
+          date_time:
+            date.toISOString().substr(0, 11) +
+            this.state.date_time.substring(12),
+        });
+      } else {
+        this.setState({
+          ...this.state,
+          date: date,
+          date_time: date.toISOString().substr(0, 11),
+        });
+      }
     };
     const handleTimeChange = (time) => {
       time = new Date(time);
-      this.setState({
-        ...this.state,
-        time: time,
-        date_time: this.state.date_time.concat(
-          time.toISOString().split("T")[1]
-        ),
-      });
+      if (this.state.date_time.includes("Z")) {
+        this.setState({
+          ...this.state,
+          time: time,
+          date_time: this.state.date_time
+            .substring(0, 11)
+            .concat(time.toISOString().split("T")[1]),
+        });
+      } else {
+        this.setState({
+          ...this.state,
+          time: time,
+          date_time: this.state.date_time.concat(
+            time.toISOString().split("T")[1]
+          ),
+        });
+      }
     };
     const handleAddStudent = () => {
       this.setState({
-        ...this.state,
         AddStudents: true,
       });
     };
     const handleAddSupervisors = () => {
       this.setState({
-        ...this.state,
         AddSupervisors: true,
       });
     };
     const handleSubmit = () => {
+      handlePromise();
       this.setState({
-        ...this.state,
-        loading: true,
+        loading: false,
       });
+    };
+    const handleDurationChange = (e) => {
+      this.setState({
+        exam_duration: e.target.value,
+      });
+    };
+    const handlePromise = () => {
+      console.log(this.state);
       axios
         .post(
-          `https://cors-anywhere.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/`,
+          `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/`,
           {
             exam_name: this.state.exam_name,
             exam_startdate: this.state.date_time,
@@ -90,39 +127,21 @@ export default class CreateExam extends Component {
         .then((res1) => {
           let id = res1.data.id;
           this.setState({
-            ...this.state,
             exam_id: id,
-            loading: false,
             disable: true,
             created: true,
           });
-        })
-        .catch(
-          this.setState({
-            ...this.state,
-            loading: false,
-          })
-        );
-    };
-    const handleDurationChange = (e) => {
-      this.setState({
-        ...this.state,
-        exam_duration: e.target.value,
-        date_time: this.state.date
-          .concat("T")
-          .substr(0, 11)
-          .concat(this.state.time.toISOString().split("T")[1]),
-      });
+        });
     };
     const handleExamNameChange = (e) => {
       this.setState({
-        ...this.state,
         exam_name: e.target.value,
       });
     };
 
     return (
       <div style={{ textAlign: "center" }}>
+        {console.log(this.state)}
         <TextField
           size="small"
           required
@@ -187,9 +206,17 @@ export default class CreateExam extends Component {
             isNaN(this.state.exam_duration) ||
             this.state.exam_duration === 0 ||
             this.state.exam_name === "exam_name" ||
-            this.state.exam_name === "exam_name"
+            this.state.exam_name === "exam_name" ||
+            this.state.exam_duration === ""
           }
-          onClick={handleSubmit}
+          onClick={() => {
+            this.setState(
+              {
+                loading: true,
+              },
+              handleSubmit
+            );
+          }}
         >
           {this.state.loading
             ? "Creating exam..."

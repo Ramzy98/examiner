@@ -3,12 +3,16 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import AddIcon from "@material-ui/icons/Add";
+import axios from "axios";
+import { Alert } from "@material-ui/lab";
+
 export default class AddSupervisors extends Component {
   state = {
     supervisors: [],
     loading: false,
     token: "",
     exam_id: "",
+    error: "",
   };
   constructor(props) {
     super(props);
@@ -25,9 +29,31 @@ export default class AddSupervisors extends Component {
         supervisors: e.target.value.replace(/\s+/g, " ").trim().split(" "),
       });
     };
-    const handleSubmit = (e) => {};
+    const handleSubmit = () => {
+      axios
+        .post(
+          `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/${this.state.exam_id}/supervisors/`,
+          {
+            students: this.state.supervisors,
+          },
+          {
+            headers: { Authorization: "Token " + this.state.token },
+          }
+        )
+        .catch(() => {
+          this.setState({
+            ...this.state,
+            error: `Error adding supervisors!`,
+          });
+        });
+    };
     return (
       <div>
+        {this.state.error !== "" ? (
+          <Alert severity="error"> {this.state.error}</Alert>
+        ) : (
+          <div></div>
+        )}
         <br />
         <TextField
           id="outlined-multiline-static"
@@ -38,6 +64,7 @@ export default class AddSupervisors extends Component {
           onChange={handleAddSupervisors}
           fullWidth
           size="medium"
+          value={this.state.supervisors}
         />
         <br /> <br />
         <Button
@@ -53,7 +80,7 @@ export default class AddSupervisors extends Component {
           }
           onClick={handleSubmit}
         >
-          {this.state.loading ? "Adding supervisors..." : "Add supervisors"}
+          {this.state.loading ? "Adding supervisors..." : "Add supervisor"}
         </Button>
       </div>
     );

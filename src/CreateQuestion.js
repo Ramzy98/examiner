@@ -11,7 +11,7 @@ import CardActions from "@material-ui/core/CardActions";
 import { Alert } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SaveIcon from "@material-ui/icons/Save";
-
+var flag = 0;
 export default class CreateQuestion extends Component {
   state = {
     exam_id: "",
@@ -51,20 +51,17 @@ export default class CreateQuestion extends Component {
   render() {
     const handleQuestionChange = (e) => {
       this.setState({
-        ...this.state,
         question: e.target.value,
         token: this.state.token,
       });
     };
     const handleQuestionMark = (e) => {
       this.setState({
-        ...this.state,
         mark: e.target.value,
       });
     };
     const handleOptionOneChange = (e) => {
       this.setState({
-        ...this.state,
         option1: { ...this.state.option1, text: e.target.value },
       });
     };
@@ -76,19 +73,16 @@ export default class CreateQuestion extends Component {
     };
     const handleOptionThreeChange = (e) => {
       this.setState({
-        ...this.state,
         option3: { ...this.state.option3, text: e.target.value },
       });
     };
     const handleOptionFourChange = (e) => {
       this.setState({
-        ...this.state,
         option4: { ...this.state.option4, text: e.target.value },
       });
     };
     const handleAnswer1 = () => {
       this.setState({
-        ...this.state,
         option1: { ...this.state.option1, is_correct: true },
         option2: { ...this.state.option2, is_correct: false },
         option3: { ...this.state.option3, is_correct: false },
@@ -97,7 +91,6 @@ export default class CreateQuestion extends Component {
     };
     const handleAnswer2 = () => {
       this.setState({
-        ...this.state,
         option2: { ...this.state.option2, is_correct: true },
         option1: { ...this.state.option1, is_correct: false },
         option3: { ...this.state.option3, is_correct: false },
@@ -106,7 +99,6 @@ export default class CreateQuestion extends Component {
     };
     const handleAnswer3 = () => {
       this.setState({
-        ...this.state,
         option3: { ...this.state.option3, is_correct: true },
         option1: { ...this.state.option1, is_correct: false },
         option2: { ...this.state.option2, is_correct: false },
@@ -115,7 +107,6 @@ export default class CreateQuestion extends Component {
     };
     const handleAnswer4 = () => {
       this.setState({
-        ...this.state,
         option4: { ...this.state.option4, is_correct: true },
         option1: { ...this.state.option1, is_correct: false },
         option2: { ...this.state.option2, is_correct: false },
@@ -127,29 +118,25 @@ export default class CreateQuestion extends Component {
       Object.keys(this.state)
         .filter((key) => key.includes("option"))
         .forEach((key) => {
-          this.setState(
-            {
-              [key]: { is_correct: false, text: "" },
-            },
-            resetQuestion
-          );
+          console.log(this.state[key]);
+          this.setState({
+            [key]: { is_correct: false, text: "" },
+          });
         });
+      resetQuestion();
     };
     const resetQuestion = () => {
       this.setState({
-        ...this.state,
         question: "",
         mark: 0,
-        flag: 2,
         counter: this.state.counter + 1,
       });
     };
     const handleSubmit = () => {
       this.setState({
-        ...this.state,
         loading: true,
       });
-      var done = 1;
+      let done = 1;
 
       axios
         .post(
@@ -164,7 +151,6 @@ export default class CreateQuestion extends Component {
         )
         .then((res) => {
           this.setState({
-            ...this.state,
             question_id: res.data.id,
           });
           Object.keys(this.state)
@@ -182,26 +168,12 @@ export default class CreateQuestion extends Component {
                       headers: { Authorization: "Token " + this.state.token },
                     }
                   )
-                  .catch(() => {
-                    this.setState({
-                      ...this.state,
-                      flag: 1,
-                    });
-                    done = 0;
-                  });
+                  .then((flag = 2), this.setState(resetchoices()))
+                  .catch((flag = 1));
             });
         })
-        .catch((res) => {
-          this.setState({
-            ...this.state,
-            flag: 1,
-          });
-        });
-      if (done === 1) {
-        resetchoices();
-      }
+        .catch((done = 0), (flag = 1));
       this.setState({
-        ...this.state,
         loading: false,
       });
     };
@@ -209,15 +181,16 @@ export default class CreateQuestion extends Component {
       <div style={{ padding: "1% 10%" }}>
         <Card variant="outlined">
           <CardContent>
-            {this.state.flag === 1 ? (
-              <Alert severity="error">
-                {" "}
-                All fields must be filled (except the options 1 option at least
-                required)!
-              </Alert>
-            ) : this.state.flag === 2 ? (
+            {console.log(flag)}
+            {flag === 2 ? (
               <Alert severity="success">
                 Question {this.state.counter - 1} added successfully!
+              </Alert>
+            ) : flag === 1 ? (
+              <Alert severity="error">
+                {" "}
+                Error occured while creating the question, please make sure you
+                filled all the required fields (at least 1 option is required)
               </Alert>
             ) : (
               <div></div>

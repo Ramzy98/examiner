@@ -4,6 +4,7 @@ import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import AddIcon from "@material-ui/icons/Add";
 import axios from "axios";
+import { Alert } from "@material-ui/lab";
 
 export default class AddStudents extends Component {
   state = {
@@ -11,6 +12,7 @@ export default class AddStudents extends Component {
     loading: false,
     token: "",
     exam_id: "",
+    error: "",
   };
   constructor(props) {
     super(props);
@@ -27,9 +29,31 @@ export default class AddStudents extends Component {
         allowedStudents: e.target.value.replace(/\s+/g, " ").trim().split(" "),
       });
     };
-    const handleSubmit = (e) => {};
+    const handleSubmit = () => {
+      axios
+        .post(
+          `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/${this.state.exam_id}/allowed-students/`,
+          {
+            students: this.state.allowedStudents,
+          },
+          {
+            headers: { Authorization: "Token " + this.state.token },
+          }
+        )
+        .catch(() => {
+          this.setState({
+            ...this.state,
+            error: `Error adding students!`,
+          });
+        });
+    };
     return (
       <div>
+        {this.state.error !== "" ? (
+          <Alert severity="error"> {this.state.error}</Alert>
+        ) : (
+          <div></div>
+        )}
         <br />
         <TextField
           id="outlined-multiline-static"
@@ -40,6 +64,7 @@ export default class AddStudents extends Component {
           onChange={handleAddStudents}
           fullWidth
           size="medium"
+          value={this.state.allowedStudents}
         />
         <br /> <br />
         <Button
