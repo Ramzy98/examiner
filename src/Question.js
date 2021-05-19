@@ -153,14 +153,9 @@ export default class Question extends Component {
             .filter((key) => key.includes("option"))
             .forEach((key) => {
               if (key !== e.target.value) {
-                this.setState(
-                  {
-                    [key]: { ...this.state[key], is_correct: false },
-                  },
-                  console.log([this.state], "SASDASDASD", key)
-                );
-              } else {
-                console.log([e.target.value], "inside else", key);
+                this.setState({
+                  [key]: { ...this.state[key], is_correct: false },
+                });
               }
             });
         }
@@ -168,7 +163,6 @@ export default class Question extends Component {
     };
     return (
       <div>
-        {console.log(this.state)}
         {updated === true ? (
           <Alert severity="success">Question updated successfully!</Alert>
         ) : (
