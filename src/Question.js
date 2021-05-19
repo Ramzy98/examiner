@@ -9,10 +9,11 @@ import CardContent from "@material-ui/core/CardContent";
 import axios from "axios";
 import CardActions from "@material-ui/core/CardActions";
 import { Alert } from "@material-ui/lab";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import SaveIcon from "@material-ui/icons/Save";
-var updated = false;
+import DeleteIcon from "@material-ui/icons/Delete";
 
+var updated = false;
+var deleted = false;
 export default class Question extends Component {
   state = {
     exam_id: "",
@@ -34,7 +35,6 @@ export default class Question extends Component {
     token: "",
     question_id: "question_id",
     mark: 0,
-    loading: false,
   };
   constructor(props) {
     super(props);
@@ -161,143 +161,162 @@ export default class Question extends Component {
         }
       );
     };
+    const deleteQuestion = () => {
+      deleted = this.props.deleteQuestion(this.state.question_id);
+      console.log(deleted);
+      this.forceUpdate();
+    };
     return (
       <div>
-        {updated === true ? (
-          <Alert severity="success">Question updated successfully!</Alert>
+        {deleted === true ? (
+          <div>
+            <Alert severity="success">
+              Question {this.props.counter} deleted successfully!
+            </Alert>
+          </div>
         ) : (
-          <div></div>
+          (updated === true ? (
+            <Alert severity="success">Question updated successfully!</Alert>
+          ) : (
+            <div></div>
+          ),
+          (
+            <Card variant="outlined">
+              <CardContent>
+                <CardActions>
+                  <TextField
+                    style={{ margin: 8 }}
+                    placeholder="Enter the question"
+                    required
+                    fullWidth
+                    value={this.state.question}
+                    margin="normal"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    label={"Question " + this.props.counter}
+                    onChange={handleQuestionChange}
+                  />{" "}
+                  <TextField
+                    required
+                    value={this.state.mark}
+                    label="Mark"
+                    onChange={handleQuestionMark}
+                  />
+                </CardActions>{" "}
+                <div>
+                  {
+                    <RadioGroup name="options">
+                      <CardActions>
+                        <FormControlLabel
+                          value="option1"
+                          control={
+                            <Radio
+                              size="small"
+                              checked={
+                                this.state.option1 &&
+                                this.state.option1.is_correct
+                              }
+                            />
+                          }
+                          onClick={handleAnswer}
+                        />
+                        <TextField
+                          fullWidth
+                          value={this.state.option1 && this.state.option1.text}
+                          label="Option 1"
+                          onChange={handleOptionOneChange}
+                        />
+                      </CardActions>
+                      <CardActions>
+                        <FormControlLabel
+                          value="option2"
+                          control={
+                            <Radio
+                              size="small"
+                              checked={
+                                this.state.option2 &&
+                                this.state.option2.is_correct
+                              }
+                            />
+                          }
+                          onClick={handleAnswer}
+                        />
+                        <TextField
+                          fullWidth
+                          label="Option 2"
+                          value={this.state.option2 && this.state.option2.text}
+                          onChange={handleOptionTwoChange}
+                        />{" "}
+                      </CardActions>
+                      <CardActions>
+                        <FormControlLabel
+                          value="option3"
+                          control={
+                            <Radio
+                              size="small"
+                              checked={
+                                this.state.option3 &&
+                                this.state.option3.is_correct
+                              }
+                            />
+                          }
+                          onClick={handleAnswer}
+                        />
+                        <TextField
+                          fullWidth
+                          label="Option 3"
+                          value={this.state.option3 && this.state.option3.text}
+                          onChange={handleOptionThreeChange}
+                        />{" "}
+                      </CardActions>
+                      <CardActions>
+                        <FormControlLabel
+                          value="option4"
+                          control={
+                            <Radio
+                              size="small"
+                              checked={
+                                this.state.option4 &&
+                                this.state.option4.is_correct
+                              }
+                            />
+                          }
+                          onClick={handleAnswer}
+                        />
+                        <TextField
+                          fullWidth
+                          label="Option 4"
+                          value={this.state.option4 && this.state.option4.text}
+                          onChange={handleOptionFourChange}
+                        />
+                      </CardActions>
+                    </RadioGroup>
+                  }{" "}
+                  <br />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    startIcon={<SaveIcon />}
+                    onClick={handleSubmit}
+                  >
+                    Update question
+                  </Button>{" "}
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<DeleteIcon />}
+                    onClick={deleteQuestion}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))
         )}
-        <Card variant="outlined">
-          <CardContent>
-            <CardActions>
-              <TextField
-                style={{ margin: 8 }}
-                placeholder="Enter the question"
-                required
-                fullWidth
-                value={this.state.question}
-                margin="normal"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                label={"Question " + this.props.counter}
-                onChange={handleQuestionChange}
-              />{" "}
-              <TextField
-                required
-                value={this.state.mark}
-                label="Mark"
-                onChange={handleQuestionMark}
-              />
-            </CardActions>
-            <div>
-              {
-                <RadioGroup name="options">
-                  <CardActions>
-                    <FormControlLabel
-                      value="option1"
-                      control={
-                        <Radio
-                          size="small"
-                          checked={
-                            this.state.option1 && this.state.option1.is_correct
-                          }
-                        />
-                      }
-                      onClick={handleAnswer}
-                    />
-                    <TextField
-                      fullWidth
-                      value={this.state.option1 && this.state.option1.text}
-                      label="Option 1"
-                      onChange={handleOptionOneChange}
-                    />
-                  </CardActions>
-                  <CardActions>
-                    <FormControlLabel
-                      value="option2"
-                      control={
-                        <Radio
-                          size="small"
-                          checked={
-                            this.state.option2 && this.state.option2.is_correct
-                          }
-                        />
-                      }
-                      onClick={handleAnswer}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Option 2"
-                      value={this.state.option2 && this.state.option2.text}
-                      onChange={handleOptionTwoChange}
-                    />{" "}
-                  </CardActions>
-                  <CardActions>
-                    <FormControlLabel
-                      value="option3"
-                      control={
-                        <Radio
-                          size="small"
-                          checked={
-                            this.state.option3 && this.state.option3.is_correct
-                          }
-                        />
-                      }
-                      onClick={handleAnswer}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Option 3"
-                      value={this.state.option3 && this.state.option3.text}
-                      onChange={handleOptionThreeChange}
-                    />{" "}
-                  </CardActions>
-                  <CardActions>
-                    <FormControlLabel
-                      value="option4"
-                      control={
-                        <Radio
-                          size="small"
-                          checked={
-                            this.state.option4 && this.state.option4.is_correct
-                          }
-                        />
-                      }
-                      onClick={handleAnswer}
-                    />
-                    <TextField
-                      fullWidth
-                      label="Option 4"
-                      value={this.state.option4 && this.state.option4.text}
-                      onChange={handleOptionFourChange}
-                    />
-                  </CardActions>
-                </RadioGroup>
-              }{" "}
-              <br />
-              <Button
-                variant="contained"
-                color="primary"
-                size="small"
-                startIcon={
-                  this.state.loading ? (
-                    <CircularProgress size={20} color="secondary" />
-                  ) : (
-                    <SaveIcon />
-                  )
-                }
-                disabled={this.state.loading}
-                onClick={handleSubmit}
-              >
-                {this.state.loading
-                  ? "Updating question..."
-                  : "Update question"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     );
   }

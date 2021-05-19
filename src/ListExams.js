@@ -2,9 +2,15 @@ import React, { Component } from "react";
 import axios from "axios";
 import { DataGrid } from "@material-ui/data-grid";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import Exam from "./Exam";
 
 const columns = [
+  {
+    field: "id",
+    headerName: "ID",
+    width: 70,
+    backgroundColor: "#376331",
+    type: "number",
+  },
   {
     field: "exam_name",
     headerName: "Exam name",
@@ -56,9 +62,15 @@ export default class ListExams extends Component {
     return (
       <div>
         {rows.length > 0 ? (
-          <div style={{ height: 630, width: 600 }}>
-            <DataGrid rows={rows} columns={columns} pageSize={10} />
-            <Exam exam={rows[5]} token={this.props.token} />
+          <div style={{ height: 630, width: 700 }}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              pageSize={10}
+              onClick={(e) => {
+                console.log(e, "sadsadsds");
+              }}
+            />
           </div>
         ) : (
           <div>

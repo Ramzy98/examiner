@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import ListExams from "./ListExams";
+import EditExam from "./EditExam";
 export default class App extends Component {
   render() {
     return (
       <div>
-        <ListExams token={"8a747b9ad8b7fb01d30c0ae0033e7951bb7ae939"} />
+        <EditExam token={"b9bb864dbd489d8b714a2211cc32aa78697a6adb"} />
       </div>
     );
   }

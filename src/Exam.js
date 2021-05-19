@@ -23,9 +23,9 @@ export default class Exam extends Component {
     super(props);
     this.state = {
       ...this.state,
-      date_time: props.exam.exam_startdate.toISOString(),
-      exam_duration: props.exam.exam_duration,
-      exam_name: props.exam.exam_name,
+      date_time: props.exam.startdate,
+      exam_duration: props.exam.duration,
+      exam_name: props.exam.exam,
       exam_id: props.exam.id,
     };
   }
@@ -72,6 +72,18 @@ export default class Exam extends Component {
           .substring(0, 11)
           .concat(time.toISOString().split("T")[1]),
       });
+    };
+    const deleteQuestion = (question_id) => {
+      var deleted = false;
+      axios
+        .delete(
+          `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/${this.props.exam.id}/question/${question_id}/`,
+          {
+            headers: { Authorization: "Token " + this.props.token },
+          }
+        )
+        .then((deleted = true));
+      return deleted;
     };
     const getQuestions = () => {
       axios
@@ -218,6 +230,7 @@ export default class Exam extends Component {
                 question={question}
                 counter={counter}
                 token={this.props.token}
+                deleteQuestion={deleteQuestion}
               />
             );
           })
