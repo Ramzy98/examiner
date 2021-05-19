@@ -117,7 +117,6 @@ export default class CreateQuestion extends Component {
       Object.keys(this.state)
         .filter((key) => key.includes("option"))
         .forEach((key) => {
-          console.log(this.state[key]);
           this.setState({
             [key]: { is_correct: false, text: "" },
           });
@@ -179,7 +178,6 @@ export default class CreateQuestion extends Component {
       <div style={{ padding: "1% 10%" }}>
         <Card variant="outlined">
           <CardContent>
-            {console.log(flag)}
             {flag === 2 ? (
               <Alert severity="success">
                 Question {this.state.counter - 1} added successfully!

@@ -9,23 +9,24 @@ import {
 } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import axios from "axios";
-import CreateQuestion from "./CreateQuestion";
+import { Alert } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import AddIcon from "@material-ui/icons/Add";
-import AddStudents from "./AddStudent";
-import AddSupervisors from "./AddSupervisors";
 import DoneIcon from "@material-ui/icons/Done";
+import Question from "./Question";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import EditIcon from "@material-ui/icons/Edit";
 var loading = false;
+var counter = 0;
+var updated = false;
 export default class Exam extends Component {
   constructor(props) {
     super(props);
     this.state = {
       ...this.state,
-      date_time: props.exam.date_time.substr(0, 11),
+      date_time: props.exam.exam_startdate.toISOString(),
       exam_duration: props.exam.exam_duration,
       exam_name: props.exam.exam_name,
       exam_id: props.exam.id,
-      token: props.token,
     };
   }
   state = {
@@ -40,7 +41,7 @@ export default class Exam extends Component {
     AddStudents: false,
     AddSupervisors: false,
     loading: false,
-    token: "",
+    questions: [],
   };
   render() {
     const handleDurationChange = (e) => {
@@ -53,9 +54,72 @@ export default class Exam extends Component {
         exam_name: e.target.value,
       });
     };
+    const handleDateChange = (date) => {
+      this.setState({
+        ...this.state,
+        date: date,
+        date_time:
+          date.toISOString().substr(0, 11) +
+          this.state.date_time.toString().substring(11),
+      });
+    };
+    const handleTimeChange = (time) => {
+      time = new Date(time);
+      this.setState({
+        ...this.state,
+        time: time,
+        date_time: this.state.date_time
+          .substring(0, 11)
+          .concat(time.toISOString().split("T")[1]),
+      });
+    };
+    const getQuestions = () => {
+      axios
+        .get(
+          `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/${this.props.exam.id}/`,
+          {
+            headers: { Authorization: "Token " + this.props.token },
+          }
+        )
+        .then((res) => {
+          this.setState({ questions: res.data.questions });
+        });
+      showQuestions();
+    };
+    const showQuestions = () => {
+      this.state.questions.map((question) => {
+        counter = counter + 1;
+        return (
+          <Question
+            key={counter}
+            question={question}
+            counter={counter}
+            token={this.props.token}
+          />
+        );
+      });
+    };
+    const updateExam = () => {
+      axios
+        .patch(
+          `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/${this.props.exam.id}/`,
+          {
+            id: this.props.exam.id,
+            exam: this.state.exam_name,
+            startdate: this.state.date_time,
+            duration: this.state.exam_duration,
+          },
+          {
+            headers: { Authorization: "Token " + this.props.token },
+          }
+        )
+        .then((updated = true), this.forceUpdate());
+    };
     return (
       <div style={{ textAlign: "center" }}>
-        {console.log(this.state)}
+        {updated && (
+          <Alert severity="success">Exam updated successfully!</Alert>
+        )}
         <TextField
           size="small"
           required
@@ -75,11 +139,11 @@ export default class Exam extends Component {
             margin="normal"
             id="date-picker-inline"
             label="Pick the date"
-            value={this.state.date}
             KeyboardButtonProps={{
               "aria-label": "change date",
             }}
             value={this.state.date_time}
+            onChange={handleDateChange}
           />{" "}
           <KeyboardTimePicker
             margin="normal"
@@ -90,6 +154,7 @@ export default class Exam extends Component {
             KeyboardButtonProps={{
               "aria-label": "change time",
             }}
+            onChange={handleTimeChange}
           />
         </MuiPickersUtilsProvider>{" "}
         <br />
@@ -124,6 +189,7 @@ export default class Exam extends Component {
             this.state.exam_name === "" ||
             this.state.exam_duration === ""
           }
+          onClick={updateExam}
         >
           {loading
             ? "Updating exam..."
@@ -132,11 +198,19 @@ export default class Exam extends Component {
             : "Update Exam"}
         </Button>{" "}
         <Button
+          startIcon={<VisibilityIcon />}
           variant="contained"
           color="primary"
           size="small"
-          disabled={!this.state.created}
-          startIcon={<AddIcon />}
+          onClick={getQuestions}
+        >
+          Show Questions
+        </Button>{" "}
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          startIcon={<EditIcon />}
         >
           Edit allowed students
         </Button>{" "}
@@ -144,25 +218,16 @@ export default class Exam extends Component {
           variant="contained"
           color="primary"
           size="small"
-          disabled={!this.state.created}
-          startIcon={<AddIcon />}
+          startIcon={<EditIcon />}
         >
           Edit supervisors
         </Button>
-        {this.state.exam_id && (
-          <CreateQuestion
-            exam_id={this.state.exam_id}
-            token={this.state.token}
-          />
-        )}{" "}
-        {this.state.AddStudents && (
-          <AddStudents exam_id={this.state.exam_id} token={this.state.token} />
-        )}
-        {this.state.AddSupervisors && (
-          <AddSupervisors
-            exam_id={this.state.exam_id}
-            token={this.state.token}
-          />
+        {this.state.questions.length > 0 ? (
+          this.state.questions.map((question) => {
+            return <Question question={question} />;
+          })
+        ) : (
+          <div></div>
         )}
       </div>
     );

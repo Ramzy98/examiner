@@ -58,7 +58,7 @@ export default class CreateExam extends Component {
           date: date,
           date_time:
             date.toISOString().substr(0, 11) +
-            this.state.date_time.substring(12),
+            this.state.date_time.substring(11),
         });
       } else {
         this.setState({
@@ -140,7 +140,6 @@ export default class CreateExam extends Component {
 
     return (
       <div style={{ textAlign: "center" }}>
-        {console.log(loading, "lodadssdadsa")}
         <TextField
           size="small"
           required
@@ -205,7 +204,7 @@ export default class CreateExam extends Component {
             isNaN(this.state.exam_duration) ||
             this.state.exam_duration === 0 ||
             this.state.exam_name === "exam_name" ||
-            this.state.exam_name === "exam_name" ||
+            this.state.exam_name === "" ||
             this.state.exam_duration === ""
           }
           onClick={handleSubmit}

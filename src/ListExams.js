@@ -8,7 +8,7 @@ const columns = [
   {
     field: "exam_name",
     headerName: "Exam name",
-    width: 130,
+    width: 200,
     backgroundColor: "#376331",
   },
 
@@ -52,14 +52,13 @@ export default class ListExams extends Component {
     for (let i = 0; i < rows.length; i++) {
       rows[i].exam_startdate = new Date(rows[i].exam_startdate.toString());
     }
-    rows.length > 0 ? console.log() : console.log(rows);
 
     return (
       <div>
         {rows.length > 0 ? (
           <div style={{ height: 630, width: 600 }}>
             <DataGrid rows={rows} columns={columns} pageSize={10} />
-            <Exam exam={rows[0]} />
+            <Exam exam={rows[5]} token={this.props.token} />
           </div>
         ) : (
           <div>
