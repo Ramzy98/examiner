@@ -12,6 +12,7 @@ import { Alert } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SaveIcon from "@material-ui/icons/Save";
 var updated = false;
+
 export default class Question extends Component {
   state = {
     exam_id: "",
@@ -19,6 +20,7 @@ export default class Question extends Component {
     option1: {
       text: "",
       is_correct: false,
+      id: this.props.question.answers[0],
     },
     option2: {
       text: "",
@@ -28,10 +30,7 @@ export default class Question extends Component {
       text: "",
       is_correct: false,
     },
-    option4: {
-      text: "",
-      is_correct: false,
-    },
+    option4: {},
     token: "",
     question_id: "question_id",
     mark: 0,
@@ -39,7 +38,6 @@ export default class Question extends Component {
   };
   constructor(props) {
     super(props);
-    console.log(props);
     this.state = {
       question: props.question.text,
       question_id: props.question.id,
@@ -51,6 +49,31 @@ export default class Question extends Component {
       option4: Object.values(props.question.answers)[3],
     };
   }
+  componentDidMount() {
+    this.setState({
+      option1: {
+        ...this.state.option1,
+
+        id: Object.keys(this.props.question.answers)[0],
+      },
+      option2: {
+        ...this.state.option2,
+
+        id: Object.keys(this.props.question.answers)[1],
+      },
+      option3: {
+        ...this.state.option3,
+
+        id: Object.keys(this.props.question.answers)[2],
+      },
+      option4: {
+        ...this.state.option4,
+
+        id: Object.keys(this.props.question.answers)[3],
+      },
+    });
+  }
+
   render() {
     const handleQuestionChange = (e) => {
       this.setState({
@@ -63,10 +86,31 @@ export default class Question extends Component {
         mark: e.target.value,
       });
     };
+    const handleOptionOneChange = (e) => {
+      this.setState({
+        option1: { ...this.state.option1, text: e.target.value },
+      });
+    };
+    const handleOptionTwoChange = (e) => {
+      this.setState({
+        ...this.state,
+        option2: { ...this.state.option2, text: e.target.value },
+      });
+    };
+    const handleOptionThreeChange = (e) => {
+      this.setState({
+        option3: { ...this.state.option3, text: e.target.value },
+      });
+    };
+    const handleOptionFourChange = (e) => {
+      this.setState({
+        option4: { ...this.state.option4, text: e.target.value },
+      });
+    };
     const handleSubmit = () => {
       axios
         .patch(
-          `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/{exam_id}/question/${this.state.question_id}//`,
+          `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/{exam_id}/question/${this.state.question_id}/`,
           {
             id: this.state.question_id,
             text: this.state.question,
@@ -76,10 +120,55 @@ export default class Question extends Component {
             headers: { Authorization: "Token " + this.props.token },
           }
         )
-        .then((updated = true), this.forceUpdate());
+        .then(
+          (updated = true),
+          this.forceUpdate(),
+          Object.keys(this.state)
+            .filter((key) => key.includes("option"))
+            .forEach((key) => {
+              axios.patch(
+                `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/question/${this.state.question_id}/answer/${this.state[key].id}/`,
+                {
+                  text: this.state[key].text,
+                  is_correct: this.state[key].is_correct,
+                },
+                {
+                  headers: { Authorization: "Token " + this.state.token },
+                }
+              );
+            })
+        );
+    };
+
+    const handleAnswer = (e) => {
+      this.setState(
+        {
+          [e.target.value]: {
+            ...this.state[e.target.value],
+            is_correct: true,
+          },
+        },
+        () => {
+          Object.keys(this.state)
+            .filter((key) => key.includes("option"))
+            .forEach((key) => {
+              if (key !== e.target.value) {
+                this.setState(
+                  {
+                    [key]: { ...this.state[key], is_correct: false },
+                  },
+                  console.log([this.state], "SASDASDASD", key)
+                );
+              } else {
+                console.log([e.target.value], "inside else", key);
+              }
+            });
+        }
+      );
     };
     return (
       <div>
+        {console.log(this.state)}
         {updated === true ? (
           <Alert severity="success">Question updated successfully!</Alert>
         ) : (
@@ -113,7 +202,7 @@ export default class Question extends Component {
                 <RadioGroup name="options">
                   <CardActions>
                     <FormControlLabel
-                      value="1"
+                      value="option1"
                       control={
                         <Radio
                           size="small"
@@ -122,16 +211,18 @@ export default class Question extends Component {
                           }
                         />
                       }
+                      onClick={handleAnswer}
                     />
                     <TextField
                       fullWidth
                       value={this.state.option1 && this.state.option1.text}
                       label="Option 1"
+                      onChange={handleOptionOneChange}
                     />
                   </CardActions>
                   <CardActions>
                     <FormControlLabel
-                      value="b"
+                      value="option2"
                       control={
                         <Radio
                           size="small"
@@ -140,16 +231,18 @@ export default class Question extends Component {
                           }
                         />
                       }
+                      onClick={handleAnswer}
                     />
                     <TextField
                       fullWidth
                       label="Option 2"
                       value={this.state.option2 && this.state.option2.text}
+                      onChange={handleOptionTwoChange}
                     />{" "}
                   </CardActions>
                   <CardActions>
                     <FormControlLabel
-                      value="3"
+                      value="option3"
                       control={
                         <Radio
                           size="small"
@@ -158,16 +251,18 @@ export default class Question extends Component {
                           }
                         />
                       }
+                      onClick={handleAnswer}
                     />
                     <TextField
                       fullWidth
                       label="Option 3"
                       value={this.state.option3 && this.state.option3.text}
+                      onChange={handleOptionThreeChange}
                     />{" "}
                   </CardActions>
                   <CardActions>
                     <FormControlLabel
-                      value="4"
+                      value="option4"
                       control={
                         <Radio
                           size="small"
@@ -176,11 +271,13 @@ export default class Question extends Component {
                           }
                         />
                       }
+                      onClick={handleAnswer}
                     />
                     <TextField
                       fullWidth
                       label="Option 4"
                       value={this.state.option4 && this.state.option4.text}
+                      onChange={handleOptionFourChange}
                     />
                   </CardActions>
                 </RadioGroup>
@@ -201,8 +298,8 @@ export default class Question extends Component {
                 onClick={handleSubmit}
               >
                 {this.state.loading
-                  ? "Adding question..."
-                  : "Add a new question"}
+                  ? "Updating question..."
+                  : "Update question"}
               </Button>
             </div>
           </CardContent>

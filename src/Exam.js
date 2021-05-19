@@ -84,21 +84,8 @@ export default class Exam extends Component {
         .then((res) => {
           this.setState({ questions: res.data.questions });
         });
-      showQuestions();
     };
-    const showQuestions = () => {
-      this.state.questions.map((question) => {
-        counter = counter + 1;
-        return (
-          <Question
-            key={counter}
-            question={question}
-            counter={counter}
-            token={this.props.token}
-          />
-        );
-      });
-    };
+
     const updateExam = () => {
       axios
         .patch(
@@ -224,7 +211,15 @@ export default class Exam extends Component {
         </Button>
         {this.state.questions.length > 0 ? (
           this.state.questions.map((question) => {
-            return <Question question={question} />;
+            counter = counter + 1;
+            return (
+              <Question
+                key={counter}
+                question={question}
+                counter={counter}
+                token={this.props.token}
+              />
+            );
           })
         ) : (
           <div></div>
