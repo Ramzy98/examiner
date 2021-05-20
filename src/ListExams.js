@@ -2,12 +2,13 @@ import React, { Component } from "react";
 import axios from "axios";
 import { DataGrid } from "@material-ui/data-grid";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import ViewAllowed from "./ViewAllowed";
 
 const columns = [
   {
     field: "id",
     headerName: "ID",
-    width: 70,
+    width: 100,
     backgroundColor: "#376331",
     type: "number",
   },
@@ -63,14 +64,13 @@ export default class ListExams extends Component {
       <div>
         {rows.length > 0 ? (
           <div style={{ height: 630, width: 700 }}>
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              pageSize={10}
-              onClick={(e) => {
-                console.log(e, "sadsadsds");
-              }}
-            />
+            <DataGrid rows={rows} columns={columns} pageSize={10} />
+            {console.log(rows, "rows")}
+            {this.props.view === true ? (
+              <ViewAllowed token={this.props.token} />
+            ) : (
+              <div></div>
+            )}
           </div>
         ) : (
           <div>

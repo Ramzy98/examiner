@@ -37,6 +37,7 @@ export default class CreateQuestion extends Component {
     mark: 0,
     counter: 1,
     loading: false,
+    flag: "0",
   };
   constructor(props) {
     super(props);
@@ -128,6 +129,7 @@ export default class CreateQuestion extends Component {
         question: "",
         mark: 0,
         counter: this.state.counter + 1,
+        flag: "success",
       });
     };
     const handleSubmit = () => {
@@ -160,31 +162,43 @@ export default class CreateQuestion extends Component {
                     {
                       text: this.state[key].text,
                       is_correct: this.state[key].is_correct,
+                      created: false,
                     },
                     {
                       headers: { Authorization: "Token " + this.state.token },
                     }
                   )
-                  .then((flag = 2), resetchoices())
-                  .catch((flag = 1));
+                  .then(resetchoices())
+                  .catch((res) => this.setState({ flag: "error" }));
             });
         })
-        .catch((flag = 1));
+        .catch((res) => this.setState({ flag: "error" }));
       this.setState({
         loading: false,
       });
     };
+    let answered =
+      this.state.option1.is_correct ||
+      this.state.option2.is_correct ||
+      this.state.option4.is_correct ||
+      this.state.option3.is_correct;
     return (
       <div style={{ padding: "1% 10%" }}>
         <Card variant="outlined">
           <CardContent>
-            {flag === 2 ? (
-              <Alert severity="success">
-                Question {this.state.counter - 1} added successfully!
-              </Alert>
-            ) : flag === 1 ? (
+            {console.log(this.state, this.state.flag)}
+            {this.state.flag === "success" ? (
+              <div>
+                <Alert severity="success">
+                  Question {this.state.counter - 1} added successfully!
+                </Alert>
+              </div>
+            ) : (
+              <div></div>
+            )}
+            {this.state.flag === "error" ? (
               <Alert severity="error">
-                {" "}
+                {console.log("inside flag=", this.state.flag)}
                 {this.state.loading
                   ? "loading plz wait"
                   : `Error occured while creating the question, please make sure you
@@ -219,7 +233,13 @@ export default class CreateQuestion extends Component {
                 <CardActions>
                   <FormControlLabel
                     value="1"
-                    control={<Radio size="small" onChange={handleAnswer1} />}
+                    control={
+                      <Radio
+                        size="small"
+                        onClick={handleAnswer1}
+                        selected={this.state.option1.is_correct}
+                      />
+                    }
                   />
                   <TextField
                     fullWidth
@@ -231,7 +251,13 @@ export default class CreateQuestion extends Component {
                 <CardActions>
                   <FormControlLabel
                     value="b"
-                    control={<Radio size="small" onChange={handleAnswer2} />}
+                    control={
+                      <Radio
+                        size="small"
+                        onClick={handleAnswer2}
+                        selected={this.state.option2.is_correct}
+                      />
+                    }
                   />
                   <TextField
                     fullWidth
@@ -243,7 +269,13 @@ export default class CreateQuestion extends Component {
                 <CardActions>
                   <FormControlLabel
                     value="3"
-                    control={<Radio size="small" onChange={handleAnswer3} />}
+                    control={
+                      <Radio
+                        size="small"
+                        onClick={handleAnswer3}
+                        selected={this.state.option3.is_correct}
+                      />
+                    }
                   />
                   <TextField
                     fullWidth
@@ -255,7 +287,13 @@ export default class CreateQuestion extends Component {
                 <CardActions>
                   <FormControlLabel
                     value="4"
-                    control={<Radio size="small" onChange={handleAnswer4} />}
+                    control={
+                      <Radio
+                        size="small"
+                        onClick={handleAnswer4}
+                        selected={this.state.option4.is_correct}
+                      />
+                    }
                   />
                   <TextField
                     fullWidth
@@ -277,7 +315,7 @@ export default class CreateQuestion extends Component {
                     <SaveIcon />
                   )
                 }
-                disabled={this.state.loading}
+                disabled={this.state.loading || !answered}
                 onClick={handleSubmit}
               >
                 {this.state.loading
