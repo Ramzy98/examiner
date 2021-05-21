@@ -78,6 +78,10 @@ export default class ViewAllowed extends Component {
       this.setState({
         id: e.target.value,
         mountComponent: false,
+        attendance: [],
+        students: [],
+        supervisors: [],
+        marks: [],
       });
     };
     const handleGetAttendance = () => {

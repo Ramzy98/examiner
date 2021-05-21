@@ -103,8 +103,9 @@ export default class AddStudents extends Component {
             headers: { Authorization: "Token " + this.state.token },
           }
         )
-        .then(this.forceUpdate(), (success = true))
-
+        .then((res) => {
+          this.forceUpdate()((success = true));
+        })
         .catch(() => {
           this.setState({
             ...this.state,

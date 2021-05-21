@@ -11,6 +11,9 @@ import CardActions from "@material-ui/core/CardActions";
 import { Alert } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SaveIcon from "@material-ui/icons/Save";
+import AddIcon from "@material-ui/icons/Add";
+import DoneIcon from "@material-ui/icons/Done";
+var updated = false;
 export default class CreateQuestion extends Component {
   state = {
     exam_id: "",
@@ -33,7 +36,7 @@ export default class CreateQuestion extends Component {
     },
     token: "",
     question_id: "question_id",
-    mark: 0,
+    mark: 1,
     counter: 1,
     loading: false,
     flag: "0",
@@ -114,6 +117,7 @@ export default class CreateQuestion extends Component {
     };
 
     const resetchoices = () => {
+      console.log(updated);
       Object.keys(this.state)
         .filter((key) => key.includes("option"))
         .forEach((key) => {
@@ -126,12 +130,13 @@ export default class CreateQuestion extends Component {
     const resetQuestion = () => {
       this.setState({
         question: "",
-        mark: 0,
+        mark: 1,
         counter: this.state.counter + 1,
-        flag: "success",
+        flag: 0,
       });
     };
     const handleSubmit = () => {
+      updated = false;
       this.setState({
         loading: true,
       });
@@ -154,21 +159,23 @@ export default class CreateQuestion extends Component {
           Object.keys(this.state)
             .filter((key) => key.includes("option"))
             .forEach((key) => {
-              if (this.state[key].text !== "")
+              console.log("outside if");
+              if (this.state[key].text !== "") {
+                console.log("inside if");
                 axios
                   .post(
                     `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/question/${this.state.question_id}/answer/`,
                     {
                       text: this.state[key].text,
                       is_correct: this.state[key].is_correct,
-                      created: false,
                     },
                     {
                       headers: { Authorization: "Token " + this.state.token },
                     }
                   )
-                  .then(resetchoices())
+                  .then(this.setState({ ...this.state, flag: "success" }))
                   .catch((res) => this.setState({ flag: "error" }));
+              }
             });
         })
         .catch((res) => this.setState({ flag: "error" }));
@@ -185,19 +192,15 @@ export default class CreateQuestion extends Component {
       <div style={{ padding: "1% 10%" }}>
         <Card variant="outlined">
           <CardContent>
-            {console.log(this.state, this.state.flag)}
             {this.state.flag === "success" ? (
               <div>
-                <Alert severity="success">
-                  Question {this.state.counter - 1} added successfully!
-                </Alert>
+                <Alert severity="success">Question added successfully!</Alert>
               </div>
             ) : (
               <div></div>
             )}
             {this.state.flag === "error" ? (
               <Alert severity="error">
-                {console.log("inside flag=", this.state.flag)}
                 {this.state.loading
                   ? "loading plz wait"
                   : `Error occured while creating the question, please make sure you
@@ -308,18 +311,34 @@ export default class CreateQuestion extends Component {
                 color="primary"
                 size="small"
                 startIcon={
-                  this.state.loading ? (
-                    <CircularProgress size={20} color="secondary" />
+                  this.state.flag === "success" ? (
+                    <DoneIcon size={20} color="secondary" />
                   ) : (
                     <SaveIcon />
                   )
                 }
-                disabled={this.state.loading || !answered}
+                disabled={
+                  this.state.loading ||
+                  !answered ||
+                  this.state.flag === "success"
+                    ? true
+                    : false
+                }
                 onClick={handleSubmit}
               >
-                {this.state.loading
-                  ? "Adding question..."
-                  : "Add a new question"}
+                {this.state.flag === "success"
+                  ? "Question saved"
+                  : "Save question"}
+              </Button>{" "}
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                startIcon={<AddIcon />}
+                onClick={resetchoices}
+                disabled={this.state.flag === "success" ? false : true}
+              >
+                Add a new question
               </Button>
             </div>
           </CardContent>
