@@ -47,19 +47,6 @@ const supervisors = [
     headerName: "Assigned Student",
     width: 200,
   },
-
-  {
-    field: "enter_time",
-    headerName: "Enter time",
-    width: 180,
-    type: "dateTime",
-  },
-  {
-    field: "submit_time",
-    headerName: "Submit time",
-    width: 180,
-    type: "dateTime",
-  },
 ];
 const marks = [
   {
@@ -115,7 +102,10 @@ export default class ViewAllowed extends Component {
           }
         )
         .then((res) => {
-          this.setState({ students: res.data.student.sort() });
+          this.setState(
+            { students: res.data.student.sort() },
+            console.log(res)
+          );
         });
     };
     const handleViewSupervisors = () => {
@@ -242,7 +232,7 @@ export default class ViewAllowed extends Component {
             <div></div>
           )}{" "}
           {this.state.supervisors.length > 0 ? (
-            <div style={{ height: 300, width: 735 }}>
+            <div style={{ height: 500, width: 400 }}>
               <DataGrid
                 rows={this.state.supervisors}
                 columns={supervisors}

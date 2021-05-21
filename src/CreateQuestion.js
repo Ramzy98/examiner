@@ -11,7 +11,6 @@ import CardActions from "@material-ui/core/CardActions";
 import { Alert } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import SaveIcon from "@material-ui/icons/Save";
-var flag = 0;
 export default class CreateQuestion extends Component {
   state = {
     exam_id: "",

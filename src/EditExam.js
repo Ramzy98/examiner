@@ -9,7 +9,6 @@ import axios from "axios";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Exam from "./Exam";
-import CreateQuestion from "./CreateQuestion";
 
 var updated = false;
 export default class EditExam extends Component {
