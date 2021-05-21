@@ -11,9 +11,11 @@ import CardActions from "@material-ui/core/CardActions";
 import { Alert } from "@material-ui/lab";
 import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
-
+import CreateQuestion from "./CreateQuestion";
+import AddIcon from "@material-ui/icons/Add";
 var updated = false;
 var deleted = false;
+var addNewQuestionvar = false;
 export default class Question extends Component {
   state = {
     exam_id: "",
@@ -110,7 +112,7 @@ export default class Question extends Component {
     const handleSubmit = () => {
       axios
         .patch(
-          `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/{exam_id}/question/${this.state.question_id}/`,
+          `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/${this.props.exam_id}/question/${this.state.question_id}/`,
           {
             id: this.state.question_id,
             text: this.state.question,
@@ -166,8 +168,13 @@ export default class Question extends Component {
       console.log(deleted);
       this.forceUpdate();
     };
+    const addNewQuestion = () => {
+      addNewQuestionvar = true;
+      this.forceUpdate();
+    };
     return (
       <div>
+        <br />
         {deleted === true ? (
           <div>
             <Alert severity="success">
@@ -311,7 +318,24 @@ export default class Question extends Component {
                     onClick={deleteQuestion}
                   >
                     Delete
+                  </Button>{" "}
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<AddIcon />}
+                    onClick={addNewQuestion}
+                  >
+                    Add a new Question
                   </Button>
+                  {addNewQuestionvar === true ? (
+                    <CreateQuestion
+                      exam_id={this.props.exam_id}
+                      token={this.props.token}
+                    />
+                  ) : (
+                    <div></div>
+                  )}
                 </div>
               </CardContent>
             </Card>

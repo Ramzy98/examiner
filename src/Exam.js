@@ -15,9 +15,13 @@ import DoneIcon from "@material-ui/icons/Done";
 import Question from "./Question";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import EditIcon from "@material-ui/icons/Edit";
+import CreateQuestion from "./CreateQuestion";
+import AddStudent from "./AddStudent";
 var loading = false;
 var counter = 0;
 var updated = false;
+var clicked = false;
+var editAllowedStudents = false;
 export default class Exam extends Component {
   constructor(props) {
     super(props);
@@ -96,6 +100,7 @@ export default class Exam extends Component {
         .then((res) => {
           this.setState({ questions: res.data.questions });
         });
+      clicked = true;
     };
 
     const updateExam = () => {
@@ -113,6 +118,10 @@ export default class Exam extends Component {
           }
         )
         .then((updated = true), this.forceUpdate());
+    };
+    const ShowAddStudent = () => {
+      editAllowedStudents = true;
+      this.forceUpdate();
     };
     return (
       <div style={{ textAlign: "center" }}>
@@ -210,6 +219,7 @@ export default class Exam extends Component {
           color="primary"
           size="small"
           startIcon={<EditIcon />}
+          onClick={ShowAddStudent}
         >
           Edit allowed students
         </Button>{" "}
@@ -231,11 +241,26 @@ export default class Exam extends Component {
                 counter={counter}
                 token={this.props.token}
                 deleteQuestion={deleteQuestion}
+                exam_id={this.props.exam.id}
               />
             );
           })
+        ) : clicked === true ? (
+          <div>
+            <CreateQuestion
+              exam_id={this.props.exam.id}
+              token={this.props.token}
+            />
+          </div>
         ) : (
           <div></div>
+        )}
+        {editAllowedStudents && (
+          <AddStudent
+            edit={true}
+            exam_id={this.props.exam.id}
+            token={this.props.token}
+          />
         )}
       </div>
     );

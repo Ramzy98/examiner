@@ -9,6 +9,7 @@ import axios from "axios";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Exam from "./Exam";
+import CreateQuestion from "./CreateQuestion";
 
 var updated = false;
 export default class EditExam extends Component {
@@ -87,7 +88,8 @@ export default class EditExam extends Component {
         {this.state.mountComponent === true ? (
           <div style={{ float: "left" }}>
             {" "}
-            <Exam exam={this.state.exam} token={this.props.token} />{" "}
+            <Exam exam={this.state.exam} token={this.props.token} />
+            {console.log(this.state.exam)}
           </div>
         ) : (
           <div></div>

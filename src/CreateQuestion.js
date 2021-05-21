@@ -139,7 +139,7 @@ export default class CreateQuestion extends Component {
 
       axios
         .post(
-          `https://cors-anywhere.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/${this.state.exam_id}/question/`,
+          `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/${this.state.exam_id}/question/`,
           {
             text: this.state.question,
             mark: this.state.mark,
@@ -158,7 +158,7 @@ export default class CreateQuestion extends Component {
               if (this.state[key].text !== "")
                 axios
                   .post(
-                    `https://cors-anywhere.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/question/${this.state.question_id}/answer/`,
+                    `https://examify-cors-proxy.herokuapp.com/http://ec2-18-191-113-113.us-east-2.compute.amazonaws.com:8000/exam/question/${this.state.question_id}/answer/`,
                     {
                       text: this.state[key].text,
                       is_correct: this.state[key].is_correct,

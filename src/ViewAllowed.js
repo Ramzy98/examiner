@@ -204,7 +204,10 @@ export default class ViewAllowed extends Component {
           {this.state.students.length > 0 ? (
             <div>
               <Alert variant="secondary">
-                <Alert.Heading>Allowed Students</Alert.Heading> <hr />
+                <Alert.Heading>
+                  Allowed Students: {this.state.students.length}
+                </Alert.Heading>{" "}
+                <hr />
                 <TextField
                   id="outlined-multiline-static"
                   label="Allowed Students"
@@ -213,7 +216,7 @@ export default class ViewAllowed extends Component {
                   variant="outlined"
                   fullWidth
                   size="medium"
-                  value={this.state.students}
+                  value={this.state.students.join(", ")}
                 />{" "}
               </Alert>
               <br />
@@ -251,8 +254,9 @@ export default class ViewAllowed extends Component {
             <div></div>
           )}{" "}
           {this.state.marks.length > 0 ? (
-            <div style={{ height: 300, width: 735 }}>
-              <DataGrid rows={this.state.marks} columns={marks} pageSize={10} />{" "}
+            <div style={{ height: 300, width: 400 }}>
+              <DataGrid rows={this.state.marks} columns={marks} pageSize={10} />
+              {console.log(this.state.marks)}
               <br />
             </div>
           ) : (
