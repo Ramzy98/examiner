@@ -1,9 +1,6 @@
 import React, { Component } from "react";
-import ListExams from "./ListExams";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CreateExam from "./CreateExam";
-import EditExam from "./EditExam";
-import CreateQuestion from "./CreateQuestion";
 
 export default class App extends Component {
   render() {
