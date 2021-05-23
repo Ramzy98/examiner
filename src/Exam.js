@@ -247,6 +247,10 @@ export default class Exam extends Component {
           })
         ) : clicked === true ? (
           <div>
+            <br />
+            <Alert severity="info">
+              This Exam Doesn't have any questions!{" "}
+            </Alert>
             <CreateQuestion
               exam_id={this.props.exam.id}
               token={this.props.token}

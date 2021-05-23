@@ -166,8 +166,13 @@ export default class AddStudents extends Component {
           <Alert severity="error"> {this.state.error}</Alert>
         ) : (
           <div></div>
-        )}
+        )}{" "}
         <br />
+        <h3
+          style={{ fontSize: "20px", fontFamily: "Century Gothic,Lucida Sans" }}
+        >
+          Add Allowed Students
+        </h3>
         <ButtonGroup disableElevation variant="contained" color="primary">
           <Button onClick={enterManually}>Enter students manually</Button>
           <Button onClick={uploadFile}>Upload an excel file</Button>
@@ -199,6 +204,7 @@ export default class AddStudents extends Component {
                 )
               }
               onClick={handleAllowedStudentsArray}
+              disabled={this.state.allowedStudents.length === 0 ? true : false}
             >
               {this.state.loading ? "Adding students..." : "Add students"}
             </Button>{" "}
@@ -214,6 +220,7 @@ export default class AddStudents extends Component {
               type="file"
               style={{ display: "none" }}
               onChange={fileHandler.bind(this)}
+              accept=".xlsx, .xls, .csv"
             />
             <label htmlFor="contained-button-file">
               <Button
@@ -223,16 +230,17 @@ export default class AddStudents extends Component {
                 startIcon={<CloudUploadIcon />}
               >
                 Choose an excel file
-              </Button>{" "}
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={handleSubmit}
-              >
-                Upload and add students
-              </Button>{" "}
-            </label>
+              </Button>
+            </label>{" "}
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={handleSubmit}
+              disabled={this.state.allowedStudents.length === 0 ? true : false}
+            >
+              Upload and add students
+            </Button>{" "}
           </div>
         ) : (
           <div></div>

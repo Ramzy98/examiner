@@ -3,6 +3,7 @@ import axios from "axios";
 import { DataGrid } from "@material-ui/data-grid";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import ViewAllowed from "./ViewAllowed";
+import Card from "@material-ui/core/Card";
 
 const columns = [
   {
@@ -67,7 +68,9 @@ export default class ListExams extends Component {
             <DataGrid rows={rows} columns={columns} pageSize={10} />
             {console.log(rows, "rows")}
             {this.props.view === true ? (
-              <ViewAllowed token={this.props.token} />
+              <Card>
+                <ViewAllowed token={this.props.token} />{" "}
+              </Card>
             ) : (
               <div></div>
             )}

@@ -80,7 +80,7 @@ export default class EditExam extends Component {
               startIcon={<DeleteIcon />}
               onClick={deleteExam}
             >
-              Delete
+              Delete Exam
             </Button>
           </CardActions>
         </CardContent>{" "}

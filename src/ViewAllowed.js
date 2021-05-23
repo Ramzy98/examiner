@@ -7,7 +7,6 @@ import CardActions from "@material-ui/core/CardActions";
 import TextField from "@material-ui/core/TextField";
 import { DataGrid } from "@material-ui/data-grid";
 import Alert from "react-bootstrap/Alert";
-import GetStudentExam from "./GetStudentExam";
 
 const columns = [
   {
@@ -72,6 +71,7 @@ export default class ViewAllowed extends Component {
     students: [],
     supervisors: [],
     marks: [],
+    clicked: false,
   };
   render() {
     const handleID = (e) => {
@@ -139,6 +139,13 @@ export default class ViewAllowed extends Component {
           this.setState({ marks: res.data }, console.log(this.state.marks));
         });
     };
+    const ShowExamInfo = () => {
+      this.setState({ clicked: true });
+      handleViewStudent();
+      handleViewSupervisors();
+      handleGetAttendance();
+      handleGetMarks();
+    };
     let rows = this.state.attendance;
     for (let i = 0; i < rows.length; i++) {
       rows[i].enter_time = new Date(rows[i].enter_time.toString());
@@ -159,99 +166,101 @@ export default class ViewAllowed extends Component {
               variant="contained"
               color="primary"
               startIcon={<VisibilityIcon />}
-              onClick={handleViewStudent}
+              onClick={ShowExamInfo}
               size="small"
             >
-              View allowed students{" "}
+              View exam Details{" "}
             </Button>{" "}
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<VisibilityIcon />}
-              onClick={handleViewSupervisors}
-            >
-              View Supervisors
-            </Button>{" "}
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<VisibilityIcon />}
-              onClick={handleGetAttendance}
-              size="small"
-            >
-              view attendance sheet{" "}
-            </Button>{" "}
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<VisibilityIcon />}
-              onClick={handleGetMarks}
-              size="small"
-            >
-              View students marks{" "}
-            </Button>
           </CardActions>
         </CardContent>
-        <GetStudentExam token={this.props.token} />
         <CardContent>
           <br />
-          {this.state.students.length > 0 ? (
+          {this.state.clicked === true ? (
             <div>
-              <Alert variant="secondary">
-                <Alert.Heading>
-                  Allowed Students: {this.state.students.length}
-                </Alert.Heading>{" "}
-                <hr />
-                <TextField
-                  id="outlined-multiline-static"
-                  label="Allowed Students"
-                  multiline
-                  rowsMax={this.state.students.length}
-                  variant="outlined"
-                  fullWidth
-                  size="medium"
-                  value={this.state.students.join(", ")}
-                />{" "}
-              </Alert>
-              <br />
-            </div>
-          ) : (
-            <div></div>
-          )}
-          {this.state.attendance.length > 0 ? (
-            <Alert style={{ height: 396, width: 760 }} variant="secondary">
               {" "}
-              <Alert.Heading>Attendance Sheet</Alert.Heading> <hr />
-              <div style={{ height: 300, width: 735 }}>
-                {" "}
-                <DataGrid
-                  rows={this.state.attendance}
-                  columns={columns}
-                  pageSize={10}
-                />
-                <hr /> <br />
-              </div>{" "}
-            </Alert>
-          ) : (
-            <div></div>
-          )}{" "}
-          {this.state.supervisors.length > 0 ? (
-            <div style={{ height: 500, width: 400 }}>
-              <DataGrid
-                rows={this.state.supervisors}
-                columns={supervisors}
-                pageSize={10}
-              />
-              <br />
-            </div>
-          ) : (
-            <div></div>
-          )}{" "}
-          {this.state.marks.length > 0 ? (
-            <div style={{ height: 300, width: 400 }}>
-              <DataGrid rows={this.state.marks} columns={marks} pageSize={10} />
-              {console.log(this.state.marks)}
-              <br />
+              {this.state.students.length > 0 ? (
+                <div>
+                  <Alert variant="secondary">
+                    <Alert.Heading>
+                      Allowed Students: {this.state.students.length}
+                    </Alert.Heading>{" "}
+                    <hr />
+                    <TextField
+                      id="outlined-multiline-static"
+                      label="Allowed Students"
+                      multiline
+                      rowsMax={this.state.students.length}
+                      variant="outlined"
+                      fullWidth
+                      size="medium"
+                      value={this.state.students.join(", ")}
+                    />{" "}
+                  </Alert>
+                  <br />
+                </div>
+              ) : (
+                <div>
+                  {" "}
+                  <Alert variant="info">
+                    This Exam Doesn't have any students!{" "}
+                  </Alert>
+                </div>
+              )}
+              {this.state.attendance.length > 0 ? (
+                <Alert style={{ height: 396, width: 760 }} variant="secondary">
+                  {" "}
+                  <Alert.Heading>Attendance Sheet</Alert.Heading> <hr />
+                  <div style={{ height: 300, width: 735 }}>
+                    {" "}
+                    <DataGrid
+                      rows={this.state.attendance}
+                      columns={columns}
+                      pageSize={10}
+                    />
+                    <hr /> <br />
+                  </div>{" "}
+                </Alert>
+              ) : (
+                <div>
+                  {" "}
+                  <Alert variant="info">This Exam Doesn't come yet! </Alert>
+                </div>
+              )}{" "}
+              {this.state.supervisors.length > 0 ? (
+                <div style={{ height: 500, width: 400 }}>
+                  <DataGrid
+                    rows={this.state.supervisors}
+                    columns={supervisors}
+                    pageSize={10}
+                  />
+                  <br />
+                </div>
+              ) : (
+                <div>
+                  {" "}
+                  <Alert variant="info">
+                    This Exam Doesn't have any supervisors!{" "}
+                  </Alert>
+                </div>
+              )}{" "}
+              {this.state.marks.length > 0 ? (
+                <div style={{ height: 300, width: 400 }}>
+                  <DataGrid
+                    rows={this.state.marks}
+                    columns={marks}
+                    pageSize={10}
+                  />
+                  {console.log(this.state.marks)}
+                  <br />
+                </div>
+              ) : (
+                <div>
+                  {" "}
+                  <Alert variant="info">
+                    This Exam Doesn't have any marks!{" "}
+                  </Alert>
+                </div>
+              )}
             </div>
           ) : (
             <div></div>
