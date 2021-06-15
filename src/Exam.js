@@ -234,6 +234,7 @@ export default class Exam extends Component {
         {this.state.questions.length > 0 ? (
           this.state.questions.map((question) => {
             counter = counter + 1;
+            console.log(question, "THE QUESTION");
             return (
               <Question
                 key={counter}
